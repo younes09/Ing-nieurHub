@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `nom` VARCHAR(100) NOT NULL,
     `email` VARCHAR(100) NOT NULL UNIQUE,
     `password` VARCHAR(255) NOT NULL,
-    `type` ENUM('Client', 'Expert', 'Bureau', 'Étudiant') NOT NULL,
+    `type` ENUM('Client', 'Expert', 'Bureau', 'Étudiant', 'Admin') NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -30,7 +30,8 @@ INSERT INTO `users` (`id`, `nom`, `email`, `password`, `type`) VALUES
 (1, 'Test User', 'test@ingenieurhub.dz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Client'),
 (2, 'Karim Boudiaf', 'karim@ingenieurhub.dz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Expert'),
 (3, 'Saci Bureau', 'bureau@ingenieurhub.dz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Bureau'),
-(4, 'Rania Meziane', 'student@ingenieurhub.dz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Étudiant');
+(4, 'Rania Meziane', 'student@ingenieurhub.dz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Étudiant'),
+(5, 'Hub Admin', 'admin@ingenieurhub.dz', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin');
 
 -- 2. Experts Table
 CREATE TABLE IF NOT EXISTS `experts` (

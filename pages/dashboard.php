@@ -157,6 +157,30 @@ if ($userType === 'Client') {
     $totalCourses = count($courses);
     $totalJobs = count($jobs);
     $totalInnovations = count($innovations);
+} elseif ($userType === 'Admin') {
+    // 1. Fetch all users
+    $stmtUsers = $db->query("SELECT id, nom, email, type, created_at FROM users ORDER BY id DESC");
+    $usersList = $stmtUsers->fetchAll();
+
+    // 2. Fetch all experts
+    $stmtExperts = $db->query("SELECT id, nom, email, spec, certifie, wilaya FROM experts ORDER BY id DESC");
+    $expertsList = $stmtExperts->fetchAll();
+
+    // 3. Fetch all projects
+    $stmtProjects = $db->query("SELECT id, titre, entreprise, domaine, budget, candidats, date FROM problematiques ORDER BY id DESC");
+    $projectsList = $stmtProjects->fetchAll();
+
+    // 4. Fetch all studies
+    $stmtStudies = $db->query("SELECT id, titre, type, logiciel, wilaya, statut, date FROM etudes_techniques ORDER BY id DESC");
+    $studiesList = $stmtStudies->fetchAll();
+
+    // Stats counts
+    $totalUsers = count($usersList);
+    $totalProjects = count($projectsList);
+    $totalStudies = count($studiesList);
+    
+    $stmtInnovCount = $db->query("SELECT COUNT(*) FROM innovations");
+    $totalInnovations = $stmtInnovCount->fetchColumn();
 }
 
 // Visual mapping utilities
@@ -657,6 +681,283 @@ $statusWidths = [
                 </div>
             </div>
         </div>
+    <?php elseif ($userType === 'Admin'): ?>
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Utilisateurs</div>
+                        <div class="fs-2 fw-extrabold text-primary"><?php echo $totalUsers; ?></div>
+                    </div>
+                    <div class="fs-1" style="opacity: 0.4;">👥</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Projets Publiés</div>
+                        <div class="fs-2 fw-extrabold text-success"><?php echo $totalProjects; ?></div>
+                    </div>
+                    <div class="fs-1" style="opacity: 0.4;">💼</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Études Demandées</div>
+                        <div class="fs-2 fw-extrabold text-warning"><?php echo $totalStudies; ?></div>
+                    </div>
+                    <div class="fs-1" style="opacity: 0.4;">📐</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Innovations</div>
+                        <div class="fs-2 fw-extrabold text-info"><?php echo $totalInnovations; ?></div>
+                    </div>
+                    <div class="fs-1" style="opacity: 0.4;">🚀</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Pills Tabs -->
+        <ul class="nav nav-pills mb-4 gap-2 border-bottom pb-3" id="adminTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link btn btn-sm py-2 px-3 fw-bold active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#admin-overview" type="button" role="tab" aria-controls="admin-overview" aria-selected="true">📊 Vue d'ensemble</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link btn btn-sm py-2 px-3 fw-bold" id="users-tab" data-bs-toggle="pill" data-bs-target="#admin-users" type="button" role="tab" aria-controls="admin-users" aria-selected="false">👥 Utilisateurs</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link btn btn-sm py-2 px-3 fw-bold" id="experts-tab" data-bs-toggle="pill" data-bs-target="#admin-experts" type="button" role="tab" aria-controls="admin-experts" aria-selected="false">👷 Experts & Fiches</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link btn btn-sm py-2 px-3 fw-bold" id="projects-tab" data-bs-toggle="pill" data-bs-target="#admin-projects" type="button" role="tab" aria-controls="admin-projects" aria-selected="false">💼 Appels à projets</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link btn btn-sm py-2 px-3 fw-bold" id="studies-tab" data-bs-toggle="pill" data-bs-target="#admin-studies" type="button" role="tab" aria-controls="admin-studies" aria-selected="false">📐 Suivi des études</button>
+            </li>
+        </ul>
+
+        <!-- Tabs Content -->
+        <div class="tab-content" id="adminTabContent">
+            <!-- 1. Overview Tab -->
+            <div class="tab-pane fade show active" id="admin-overview" role="tabpanel" aria-labelledby="overview-tab">
+                <div class="row g-4">
+                    <div class="col-md-7">
+                        <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle h-100">
+                            <h3 class="fw-bold fs-6 text-dark mb-3 border-bottom pb-2">📋 Dernières études soumises</h3>
+                            <?php if (count($studiesList) === 0): ?>
+                                <p class="text-muted small">Aucune étude.</p>
+                            <?php else: ?>
+                                <div class="d-flex flex-column gap-3">
+                                    <?php foreach (array_slice($studiesList, 0, 3) as $st): ?>
+                                        <div class="p-2.5 bg-light rounded-3 d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <div class="fw-bold text-dark fs-8"><?php echo htmlspecialchars($st['titre']); ?></div>
+                                                <span class="text-muted small" style="font-size: 11px;"><?php echo htmlspecialchars($st['type']); ?> • <?php echo htmlspecialchars($st['logiciel']); ?></span>
+                                            </div>
+                                            <span class="badge" style="background-color: <?php echo $statusColors[$st['statut']]; ?>"><?php echo htmlspecialchars($st['statut']); ?></span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle h-100">
+                            <h3 class="fw-bold fs-6 text-dark mb-3 border-bottom pb-2">📊 Répartition des Utilisateurs</h3>
+                            <div class="d-flex flex-column gap-2 small">
+                                <?php
+                                $roleCounts = ['Client' => 0, 'Expert' => 0, 'Bureau' => 0, 'Étudiant' => 0, 'Admin' => 0];
+                                foreach ($usersList as $u) {
+                                    if (isset($roleCounts[$u['type']])) {
+                                        $roleCounts[$u['type']]++;
+                                    }
+                                }
+                                foreach ($roleCounts as $role => $count):
+                                    $pct = $totalUsers > 0 ? round(($count / $totalUsers) * 100) : 0;
+                                ?>
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span><b><?php echo $role; ?></b></span>
+                                            <span class="text-muted"><?php echo $count; ?> (<?php echo $pct; ?>%)</span>
+                                        </div>
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar" style="width: <?php echo $pct; ?>%; background-color: var(--primary);"></div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Users Tab -->
+            <div class="tab-pane fade" id="admin-users" role="tabpanel" aria-labelledby="users-tab">
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle">
+                    <h3 class="fw-bold fs-6 text-dark mb-3 border-bottom pb-2">👤 Comptes Utilisateurs</h3>
+                    <div class="table-responsive">
+                        <table class="table align-middle fs-7">
+                            <thead>
+                                <tr class="table-light">
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Date d'inscription</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($usersList as $user): ?>
+                                    <tr id="user-row-<?php echo $user['id']; ?>">
+                                        <td><?php echo $user['id']; ?></td>
+                                        <td class="fw-bold text-dark"><?php echo htmlspecialchars($user['nom']); ?></td>
+                                        <td><?php echo htmlspecialchars($user['email']); ?></td>
+                                        <td><span class="badge bg-secondary"><?php echo htmlspecialchars($user['type']); ?></span></td>
+                                        <td><?php echo date('d/m/Y H:i', strtotime($user['created_at'])); ?></td>
+                                        <td>
+                                            <?php if ($user['id'] !== $userId): ?>
+                                                <button class="btn btn-outline-danger btn-sm py-0.5 px-2 fs-8" onclick="adminDeleteUser(<?php echo $user['id']; ?>)">Supprimer</button>
+                                            <?php else: ?>
+                                                <span class="text-muted small">Moi</span>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Experts Tab -->
+            <div class="tab-pane fade" id="admin-experts" role="tabpanel" aria-labelledby="experts-tab">
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle">
+                    <h3 class="fw-bold fs-6 text-dark mb-3 border-bottom pb-2">👷 Validation & Certification des Experts</h3>
+                    <div class="table-responsive">
+                        <table class="table align-middle fs-7">
+                            <thead>
+                                <tr class="table-light">
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Spécialité</th>
+                                    <th>Wilaya</th>
+                                    <th>Certifié</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($expertsList as $ex): ?>
+                                    <tr id="expert-row-<?php echo $ex['id']; ?>">
+                                        <td><?php echo $ex['id']; ?></td>
+                                        <td class="fw-bold text-dark"><?php echo htmlspecialchars($ex['nom']); ?></td>
+                                        <td><?php echo htmlspecialchars($ex['email']); ?></td>
+                                        <td><?php echo htmlspecialchars($ex['spec']); ?></td>
+                                        <td><?php echo htmlspecialchars($ex['wilaya']); ?></td>
+                                        <td>
+                                            <span class="badge <?php echo $ex['certifie'] ? 'bg-success text-white' : 'bg-warning text-dark'; ?>" id="cert-badge-<?php echo $ex['id']; ?>">
+                                                <?php echo $ex['certifie'] ? 'Oui' : 'Non'; ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-premium btn-sm py-0.5 px-2 fs-8" onclick="adminToggleCertification(<?php echo $ex['id']; ?>)">Alterner Certif.</button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Projects Tab -->
+            <div class="tab-pane fade" id="admin-projects" role="tabpanel" aria-labelledby="projects-tab">
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle">
+                    <h3 class="fw-bold fs-6 text-dark mb-3 border-bottom pb-2">💼 Modération des Appels à Projets</h3>
+                    <div class="table-responsive">
+                        <table class="table align-middle fs-7">
+                            <thead>
+                                <tr class="table-light">
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Entreprise</th>
+                                    <th>Domaine</th>
+                                    <th>Candidats</th>
+                                    <th>Publié</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($projectsList as $pr): ?>
+                                    <tr id="project-row-<?php echo $pr['id']; ?>">
+                                        <td><?php echo $pr['id']; ?></td>
+                                        <td class="fw-bold text-dark"><?php echo htmlspecialchars($pr['titre']); ?></td>
+                                        <td><?php echo htmlspecialchars($pr['entreprise']); ?></td>
+                                        <td><span class="badge bg-info text-primary border border-info"><?php echo htmlspecialchars($pr['domaine']); ?></span></td>
+                                        <td><b><?php echo $pr['candidats']; ?></b> postulants</td>
+                                        <td><?php echo htmlspecialchars($pr['date']); ?></td>
+                                        <td>
+                                            <button class="btn btn-outline-danger btn-sm py-0.5 px-2 fs-8" onclick="adminDeleteProject(<?php echo $pr['id']; ?>)">Supprimer</button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Studies Tab -->
+            <div class="tab-pane fade" id="admin-studies" role="tabpanel" aria-labelledby="studies-tab">
+                <div class="bg-white rounded-4 p-4 shadow-sm border border-light-subtle">
+                    <h3 class="fw-bold fs-6 text-dark mb-3 border-bottom pb-2">📐 Suivi et Changement d'État des Études Techniques</h3>
+                    <div class="table-responsive">
+                        <table class="table align-middle fs-7">
+                            <thead>
+                                <tr class="table-light">
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Type</th>
+                                    <th>Logiciel</th>
+                                    <th>Wilaya</th>
+                                    <th>État Actuel</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($studiesList as $st): ?>
+                                    <tr id="study-row-<?php echo $st['id']; ?>">
+                                        <td><?php echo $st['id']; ?></td>
+                                        <td class="fw-bold text-dark"><?php echo htmlspecialchars($st['titre']); ?></td>
+                                        <td><?php echo htmlspecialchars($st['type']); ?></td>
+                                        <td><?php echo htmlspecialchars($st['logiciel']); ?></td>
+                                        <td><?php echo htmlspecialchars($st['wilaya']); ?></td>
+                                        <td>
+                                            <span class="badge" id="study-badge-<?php echo $st['id']; ?>" style="background-color: <?php echo $statusColors[$st['statut']]; ?>;">
+                                                <?php echo htmlspecialchars($st['statut']); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button class="btn btn-outline-secondary btn-sm fs-8 py-0.5 px-1.5" onclick="adminUpdateStudy(<?php echo $st['id']; ?>, 'Reçue')">Reçue</button>
+                                                <button class="btn btn-outline-warning btn-sm fs-8 py-0.5 px-1.5" onclick="adminUpdateStudy(<?php echo $st['id']; ?>, 'En cours')">En cours</button>
+                                                <button class="btn btn-outline-success btn-sm fs-8 py-0.5 px-1.5" onclick="adminUpdateStudy(<?php echo $st['id']; ?>, 'Livrée')">Livrée</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     <?php endif; ?>
 </div>
 
@@ -691,6 +992,103 @@ function toggleExpertStatus(action) {
             } else {
                 $('#switchOnline').prop('checked', !isChecked);
             }
+        }
+    });
+}
+
+// Admin Actions Handlers
+function adminDeleteUser(id) {
+    if (!confirm("Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible.")) {
+        return;
+    }
+    $.ajax({
+        url: 'api/admin_actions.php',
+        method: 'POST',
+        data: { action: 'delete_user', id: id },
+        dataType: 'json',
+        success: function(res) {
+            if (res.success) {
+                $('#user-row-' + id).fadeOut();
+            } else {
+                alert(res.error);
+            }
+        },
+        error: function() {
+            alert("Erreur lors de la suppression de l'utilisateur.");
+        }
+    });
+}
+
+function adminToggleCertification(id) {
+    $.ajax({
+        url: 'api/admin_actions.php',
+        method: 'POST',
+        data: { action: 'toggle_expert_certification', id: id },
+        dataType: 'json',
+        success: function(res) {
+            if (res.success) {
+                const badge = $('#cert-badge-' + id);
+                if (res.new_status === 1) {
+                    badge.text('Oui').removeClass('bg-warning text-dark').addClass('bg-success text-white');
+                } else {
+                    badge.text('Non').removeClass('bg-success text-white').addClass('bg-warning text-dark');
+                }
+            } else {
+                alert(res.error);
+            }
+        },
+        error: function() {
+            alert("Erreur lors de la modification de la certification.");
+        }
+    });
+}
+
+function adminDeleteProject(id) {
+    if (!confirm("Voulez-vous vraiment supprimer cet appel à projet ?")) {
+        return;
+    }
+    $.ajax({
+        url: 'api/admin_actions.php',
+        method: 'POST',
+        data: { action: 'delete_project', id: id },
+        dataType: 'json',
+        success: function(res) {
+            if (res.success) {
+                $('#project-row-' + id).fadeOut();
+            } else {
+                alert(res.error);
+            }
+        },
+        error: function() {
+            alert("Erreur lors de la suppression du projet.");
+        }
+    });
+}
+
+function adminUpdateStudy(id, status) {
+    $.ajax({
+        url: 'api/admin_actions.php',
+        method: 'POST',
+        data: { action: 'update_study_status', id: id, status: status },
+        dataType: 'json',
+        success: function(res) {
+            if (res.success) {
+                const badge = $('#study-badge-' + id);
+                badge.text(status);
+                
+                // Update badge color
+                const colors = {
+                    "Reçue": "#64748b",
+                    "En cours": "#f59e0b",
+                    "Livrée": "#22c55e"
+                };
+                badge.css('background-color', colors[status]);
+            } else {
+                alert(res.error);
+            }
+        },
+        error: function() {
+            alert("Erreur lors de la modification du statut de l'étude.");
         }
     });
 }
