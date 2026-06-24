@@ -26,10 +26,12 @@ if (empty($titre) || empty($entreprise) || empty($budget) || empty($delai) || em
 try {
     $db = getDB();
     $date = date('d/m/Y');
+    $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : null;
     
-    $stmt = $db->prepare("INSERT INTO problematiques (titre, entreprise, secteur, wilaya, budget, delai, domaine, urgent, candidats, `desc`, `date`) VALUES (:titre, :entreprise, :secteur, :wilaya, :budget, :delai, :domaine, :urgent, 0, :description, :date)");
+    $stmt = $db->prepare("INSERT INTO problematiques (user_id, titre, entreprise, secteur, wilaya, budget, delai, domaine, urgent, candidats, `desc`, `date`) VALUES (:user_id, :titre, :entreprise, :secteur, :wilaya, :budget, :delai, :domaine, :urgent, 0, :description, :date)");
     
     $stmt->execute([
+        ':user_id' => $user_id,
         ':titre' => $titre,
         ':entreprise' => $entreprise,
         ':secteur' => $secteur,

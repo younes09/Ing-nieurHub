@@ -24,6 +24,7 @@ if ($action === 'login') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['nom'];
             $_SESSION['user_type'] = $user['type'];
+            $_SESSION['user_email'] = $user['email'];
             echo json_encode(['success' => true, 'message' => 'Connexion réussie !']);
         } else {
             echo json_encode(['error' => 'Identifiants incorrects.']);
@@ -73,6 +74,7 @@ if ($action === 'login') {
         $_SESSION['user_id'] = $db->lastInsertId();
         $_SESSION['user_name'] = $nom;
         $_SESSION['user_type'] = $type;
+        $_SESSION['user_email'] = $email;
 
         echo json_encode(['success' => true, 'message' => 'Inscription et connexion réussies !']);
     } catch (PDOException $e) {

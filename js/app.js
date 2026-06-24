@@ -748,7 +748,7 @@ function handleAuthSubmit(e) {
             if (res.success) {
                 alertBox.text(res.message).removeClass('d-none').addClass('alert-success');
                 setTimeout(() => {
-                    navigateTo('connexion');
+                    navigateTo('dashboard');
                 }, 1000);
             } else {
                 alertBox.text(res.error).removeClass('d-none').addClass('alert-danger');

@@ -7,7 +7,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'accueil';
 $valid_pages = [
     'accueil', 'experts', 'travail', 'fournisseurs', 
     'innovation', 'formations', 'etudes', 'recrutement', 
-    'chatbot', 'connexion'
+    'chatbot', 'connexion', 'dashboard'
 ];
 
 if (!in_index_array($page, $valid_pages)) {
@@ -81,6 +81,7 @@ function in_index_array($needle, $haystack) {
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                                     <li><span class="dropdown-item-text text-muted small">Rôle: <?php echo $_SESSION['user_type']; ?></span></li>
+                                    <li><button class="dropdown-item fw-bold text-primary" onclick="navigateTo('dashboard')">📊 Mon Tableau de bord</button></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><button class="dropdown-item text-danger" onclick="logoutUser()">Déconnexion</button></li>
                                 </ul>

@@ -22,10 +22,12 @@ if (empty($type) || empty($titre) || empty($wilaya) || empty($desc)) {
 try {
     $db = getDB();
     $date = date('d/m/Y');
+    $user_id = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : null;
     
-    $stmt = $db->prepare("INSERT INTO etudes_techniques (titre, type, logiciel, wilaya, `desc`, statut, `date`) VALUES (:titre, :type, :logiciel, :wilaya, :description, 'Reçue', :date)");
+    $stmt = $db->prepare("INSERT INTO etudes_techniques (user_id, titre, type, logiciel, wilaya, `desc`, statut, `date`) VALUES (:user_id, :titre, :type, :logiciel, :wilaya, :description, 'Reçue', :date)");
     
     $stmt->execute([
+        ':user_id' => $user_id,
         ':titre' => $titre,
         ':type' => $type,
         ':logiciel' => $logiciel,

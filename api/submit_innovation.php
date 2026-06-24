@@ -27,12 +27,14 @@ $statut = (strtolower($prix) === 'incubation' || strtolower($prix) === 'cherche 
 
 try {
     $db = getDB();
+    $email = isset($_SESSION['user_email']) ? $_SESSION['user_email'] : null;
     
-    $stmt = $db->prepare("INSERT INTO innovations (titre, auteur, type, univ, domaine, prix, tags, `desc`, note, vues, statut) VALUES (:titre, :auteur, :type, :univ, :domaine, :prix, :tags, :description, 5.0, 0, :statut)");
+    $stmt = $db->prepare("INSERT INTO innovations (titre, auteur, email, type, univ, domaine, prix, tags, `desc`, note, vues, statut) VALUES (:titre, :auteur, :email, :type, :univ, :domaine, :prix, :tags, :description, 5.0, 0, :statut)");
     
     $stmt->execute([
         ':titre' => $titre,
         ':auteur' => $auteur,
+        ':email' => $email,
         ':type' => $type,
         ':univ' => $univ,
         ':domaine' => $domaine,
