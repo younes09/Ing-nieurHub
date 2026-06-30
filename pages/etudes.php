@@ -77,9 +77,17 @@ $statusWidths = [
                         <textarea name="desc" class="form-control form-control-sm py-2 fs-7" rows="3" placeholder="Description du projet..." required></textarea>
                     </div>
                     
-                    <!-- File dropzone mock -->
-                    <div class="p-3 text-center mb-3 rounded-3" style="background: var(--light); border: 2px dashed #b3d6f0; color: var(--gray-600); font-size: 11px; cursor: pointer;" onclick="alert('Module de chargement de fichiers activé (Formats acceptés: .zip, .shp, .pdf, .dwg)')">
-                        <i class="fa fa-paperclip me-1"></i> Glissez vos fichiers (shapefile, PDF, plans) ou cliquez pour charger
+                    <!-- Real file upload zone -->
+                    <div class="mb-3">
+                        <label class="form-label fs-8 fw-bold text-secondary text-uppercase mb-1">Document ou plan technique (Optionnel)</label>
+                        <div id="file-dropzone" class="p-3 text-center rounded-3 position-relative" style="background: var(--light); border: 2px dashed #b3d6f0; color: var(--gray-600); font-size: 11px; cursor: pointer; transition: border-color 0.2s;">
+                            <i class="fa fa-paperclip me-1"></i> <span id="dropzone-text">Glissez vos fichiers (shapefile, PDF, plans) ou cliquez pour charger</span>
+                            <input type="file" name="study_file" id="study_file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer;" onchange="handleFileSelect(this)">
+                        </div>
+                        <div id="file-info" class="mt-2 d-none text-muted fs-8 d-flex justify-content-between align-items-center bg-light p-2 rounded border border-light-subtle">
+                            <span>📂 <span id="file-name" class="fw-bold"></span> (<span id="file-size"></span>)</span>
+                            <button type="button" class="btn btn-sm btn-link text-danger p-0 text-decoration-none" onclick="removeSelectedFile()"><i class="fa fa-trash-alt"></i> Retirer</button>
+                        </div>
                     </div>
                     
                     <div id="study-status-alert" class="alert d-none mb-3 py-2 fs-7"></div>

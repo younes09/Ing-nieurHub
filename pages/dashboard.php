@@ -171,7 +171,7 @@ if ($userType === 'Client') {
     $projectsList = $stmtProjects->fetchAll();
 
     // 4. Fetch all studies
-    $stmtStudies = $db->query("SELECT id, titre, type, logiciel, wilaya, statut, date FROM etudes_techniques ORDER BY id DESC");
+    $stmtStudies = $db->query("SELECT id, titre, type, logiciel, wilaya, statut, date, fichier FROM etudes_techniques ORDER BY id DESC");
     $studiesList = $stmtStudies->fetchAll();
 
     // Stats counts
@@ -343,26 +343,34 @@ $statusWidths = [
                     <?php else: ?>
                         <div class="row g-3">
                             <?php foreach ($studies as $s): ?>
-                                <div class="col-md-6">
-                                    <div class="p-3 bg-light rounded-4 border border-light-subtle">
-                                        <div class="d-flex align-items-center justify-content-between mb-2">
-                                            <span class="badge" style="background-color: <?php echo $statusColors[$s['statut']]; ?>"><?php echo htmlspecialchars($s['statut']); ?></span>
-                                            <span class="text-muted fs-8"><?php echo htmlspecialchars($s['date']); ?></span>
-                                        </div>
-                                        <h4 class="fw-bold fs-7 text-dark mb-1"><?php echo htmlspecialchars($s['titre']); ?></h4>
-                                        <p class="text-muted fs-8 mb-2"><?php echo htmlspecialchars($s['type']); ?> • Logiciel : <?php echo htmlspecialchars($s['logiciel']); ?></p>
-                                        
-                                        <!-- Progress bar -->
-                                        <div class="progress mb-1" style="height: 6px;">
-                                            <div class="progress-bar" role="progressbar" style="width: <?php echo $statusWidths[$s['statut']]; ?>; background-color: <?php echo $statusColors[$s['statut']]; ?>;"></div>
-                                        </div>
-                                        <div class="d-flex justify-content-between text-muted fs-9">
-                                            <span>Soumis</span>
-                                            <span>Analyse</span>
-                                            <span>Livré</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                 <div class="col-md-6">
+                                     <div class="p-3 bg-light rounded-4 border border-light-subtle h-100 d-flex flex-column justify-content-between">
+                                         <div>
+                                             <div class="d-flex align-items-center justify-content-between mb-2">
+                                                 <span class="badge" style="background-color: <?php echo $statusColors[$s['statut']]; ?>"><?php echo htmlspecialchars($s['statut']); ?></span>
+                                                 <span class="text-muted fs-8"><?php echo htmlspecialchars($s['date']); ?></span>
+                                             </div>
+                                             <h4 class="fw-bold fs-7 text-dark mb-1"><?php echo htmlspecialchars($s['titre']); ?></h4>
+                                             <p class="text-muted fs-8 mb-2"><?php echo htmlspecialchars($s['type']); ?> • Logiciel : <?php echo htmlspecialchars($s['logiciel']); ?></p>
+                                             
+                                             <!-- Progress bar -->
+                                             <div class="progress mb-1" style="height: 6px;">
+                                                 <div class="progress-bar" role="progressbar" style="width: <?php echo $statusWidths[$s['statut']]; ?>; background-color: <?php echo $statusColors[$s['statut']]; ?>;"></div>
+                                             </div>
+                                             <div class="d-flex justify-content-between text-muted fs-9 mb-2">
+                                                 <span>Soumis</span>
+                                                 <span>Analyse</span>
+                                                 <span>Livré</span>
+                                             </div>
+                                         </div>
+                                         <?php if (!empty($s['fichier'])): ?>
+                                             <div class="pt-2 border-top border-light-subtle d-flex align-items-center justify-content-between">
+                                                 <span class="text-muted" style="font-size: 10px;">Fichier :</span>
+                                                 <a href="uploads/studies/<?php echo htmlspecialchars($s['fichier']); ?>" download class="btn btn-outline-primary btn-sm py-0.5 px-2 fs-9 text-decoration-none fw-bold" style="font-size: 10px;"><i class="fa fa-download me-1"></i> Télécharger</a>
+                                             </div>
+                                         <?php endif; ?>
+                                     </div>
+                                 </div>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
@@ -408,7 +416,8 @@ $statusWidths = [
                     <?php if (!$expertProfile): ?>
                         <div class="text-center py-4">
                             <h3 class="fw-bold fs-6 text-warning mb-2">⚠️ Profil public non configuré</h3>
-                            <p class="text-muted small">Votre email <b><?php echo htmlspecialchars($userEmail); ?></b> n'est pas encore relié à un profil d'expert public. Pour configurer votre fiche expert publique, veuillez contacter le secrétariat ou mettre à jour vos coordonnées.</p>
+                            <p class="text-muted small mb-3">Votre email <b><?php echo htmlspecialchars($userEmail); ?></b> n'est pas encore relié à un profil d'expert public. Pour configurer votre fiche expert publique et commencer à recevoir des projets, veuillez initialiser votre profil.</p>
+                            <button class="btn btn-premium btn-sm py-1.5 px-4 border-0" onclick="openExpertProfileModal()">⚙️ Configurer mon profil expert</button>
                         </div>
                     <?php else: ?>
                         <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
@@ -416,11 +425,21 @@ $statusWidths = [
                                 <span class="badge bg-gold-subtle text-warning-emphasis border border-warning-subtle py-1 px-2.5 fs-8 mb-2">⭐ Expert Certifié Dz</span>
                                 <h3 class="fw-bold fs-5 text-dark mb-1"><?php echo htmlspecialchars($expertProfile['nom']); ?></h3>
                                 <p class="text-muted small mb-2"><?php echo htmlspecialchars($expertProfile['grade']); ?> • <b>Spécialité :</b> <?php echo htmlspecialchars($expertProfile['spec']); ?></p>
-                                <div class="d-flex align-items-center gap-3 text-muted fs-8">
+                                <div class="d-flex align-items-center gap-3 text-muted fs-8 mb-3">
                                     <span>📍 <b>Wilaya:</b> <?php echo htmlspecialchars($expertProfile['wilaya']); ?></span>
                                     <span>📈 <b>Note:</b> <span class="text-warning font-bold">★ <?php echo $expertProfile['note']; ?></span> (<?php echo $expertProfile['avis']; ?> avis)</span>
                                     <span>💲 <b>Tarif journalier:</b> <?php echo number_format($expertProfile['prix'], 0, ' ', ' '); ?> DA</span>
                                 </div>
+                                <div class="d-flex flex-wrap gap-1 mb-3">
+                                    <?php 
+                                    $domainsList = explode(',', $expertProfile['domaines']);
+                                    foreach ($domainsList as $dom): 
+                                        if (empty(trim($dom))) continue;
+                                    ?>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-9 px-2 py-1"><?php echo htmlspecialchars(trim($dom)); ?></span>
+                                    <?php endforeach; ?>
+                                </div>
+                                <button class="btn btn-premium btn-sm py-1.5 px-3 border-0 mt-1" onclick="openExpertProfileModal()">✏️ Modifier le profil</button>
                             </div>
                             <span class="fs-1">🏆</span>
                         </div>
@@ -926,6 +945,7 @@ $statusWidths = [
                                     <th>Type</th>
                                     <th>Logiciel</th>
                                     <th>Wilaya</th>
+                                    <th>Fichier</th>
                                     <th>État Actuel</th>
                                     <th>Action</th>
                                 </tr>
@@ -938,6 +958,13 @@ $statusWidths = [
                                         <td><?php echo htmlspecialchars($st['type']); ?></td>
                                         <td><?php echo htmlspecialchars($st['logiciel']); ?></td>
                                         <td><?php echo htmlspecialchars($st['wilaya']); ?></td>
+                                        <td>
+                                            <?php if (!empty($st['fichier'])): ?>
+                                                <a href="uploads/studies/<?php echo htmlspecialchars($st['fichier']); ?>" download class="btn btn-outline-primary btn-sm py-0.5 px-2 text-decoration-none fw-bold" style="font-size: 10px;"><i class="fa fa-download me-1"></i> Télécharger</a>
+                                            <?php else: ?>
+                                                <span class="text-muted" style="font-size: 10px; font-style: italic;">Aucun</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td>
                                             <span class="badge" id="study-badge-<?php echo $st['id']; ?>" style="background-color: <?php echo $statusColors[$st['statut']]; ?>;">
                                                 <?php echo htmlspecialchars($st['statut']); ?>
@@ -959,6 +986,82 @@ $statusWidths = [
             </div>
         </div>
     <?php endif; ?>
+</div>
+
+<!-- EXPERT PROFILE EDIT MODAL -->
+<div class="glass-modal d-none" id="expert-profile-modal">
+    <div class="glass-modal-content" style="max-width: 600px;">
+        <div class="p-3 text-white d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, var(--primary), #7c3aed); border-top-left-radius: 23px; border-top-right-radius: 23px;">
+            <div>
+                <div class="fw-bold fs-6">✏️ Configurer mon Profil Expert</div>
+                <div class="small text-violet-200" style="font-size: 11px; color: #c4b5fd;">Configurez vos informations publiques sur la marketplace</div>
+            </div>
+            <button class="btn btn-link text-white p-0 fs-5" onclick="closeExpertProfileModal()"><i class="fa fa-times"></i></button>
+        </div>
+        <div class="p-4">
+            <form id="expert-profile-form" onsubmit="submitExpertProfile(event)">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fs-8 fw-bold text-secondary text-uppercase mb-1">Nom complet *</label>
+                        <input type="text" name="nom" id="profile-nom" class="form-control form-control-sm py-2 fs-7" required value="<?php echo htmlspecialchars($expertProfile ? $expertProfile['nom'] : $userName); ?>">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fs-8 fw-bold text-secondary text-uppercase mb-1">Grade / Titre *</label>
+                        <input type="text" name="grade" id="profile-grade" class="form-control form-control-sm py-2 fs-7" placeholder="Ex: Ingénieur VRD / Professeur" required value="<?php echo htmlspecialchars($expertProfile ? $expertProfile['grade'] : ''); ?>">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fs-8 fw-bold text-secondary text-uppercase mb-1">Spécialité principale *</label>
+                        <input type="text" name="spec" id="profile-spec" class="form-control form-control-sm py-2 fs-7" placeholder="Ex: AEP / Assainissement" required value="<?php echo htmlspecialchars($expertProfile ? $expertProfile['spec'] : ''); ?>">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fs-8 fw-bold text-secondary text-uppercase mb-1">Wilaya *</label>
+                        <select name="wilaya" id="profile-wilaya" class="form-select form-select-sm py-2 fs-7" required>
+                            <option value="">-- Sélectionner --</option>
+                            <?php 
+                            $availWilayas = ["Alger","Blida","Oran","Constantine","Tizi-Ouzou","Boumerdès","Annaba"];
+                            foreach ($availWilayas as $w): 
+                                $selected = ($expertProfile && $expertProfile['wilaya'] === $w) ? 'selected' : '';
+                            ?>
+                                <option value="<?php echo htmlspecialchars($w); ?>" <?php echo $selected; ?>><?php echo htmlspecialchars($w); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fs-8 fw-bold text-secondary text-uppercase mb-1">Tarif journalier (DA) *</label>
+                        <input type="number" name="prix" id="profile-prix" class="form-control form-control-sm py-2 fs-7" required min="1" value="<?php echo htmlspecialchars($expertProfile ? $expertProfile['prix'] : '3000'); ?>">
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <label class="form-label fs-8 fw-bold text-secondary text-uppercase mb-1">Domaines d'expertise *</label>
+                        <div class="row g-2">
+                            <?php 
+                            $availDomaines = ["Hydraulique","AEP","VRD","GC","Topographie","Assainissement","Irrigation","SIG","Ouvrages hydrauliques","Traitement des eaux"];
+                            $currentDomaines = $expertProfile ? explode(',', $expertProfile['domaines']) : [];
+                            foreach ($availDomaines as $d): 
+                                $checked = in_array($d, $currentDomaines) ? 'checked' : '';
+                            ?>
+                                <div class="col-6 col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="domaines[]" value="<?php echo htmlspecialchars($d); ?>" id="chk-dom-<?php echo htmlspecialchars($d); ?>" <?php echo $checked; ?>>
+                                        <label class="form-check-label fs-8 text-dark" for="chk-dom-<?php echo htmlspecialchars($d); ?>">
+                                            <?php echo htmlspecialchars($d); ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="profile-status-alert" class="alert d-none mt-3 py-2 fs-7"></div>
+                
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <button type="button" class="btn btn-outline-secondary btn-sm py-1.5 px-3 fs-7" onclick="closeExpertProfileModal()">Annuler</button>
+                    <button type="submit" class="btn btn-premium btn-sm py-1.5 px-4 fs-7 border-0">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>

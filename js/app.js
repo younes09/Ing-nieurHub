@@ -52,6 +52,31 @@ $(document).ready(function() {
     if (urlParams.get('page') === 'fournisseurs') {
         $('#filter-supplier-wilaya').on('change', filterSuppliers);
     }
+    
+    // File upload Drag and Drop listeners
+    const dropzone = $('#file-dropzone');
+    if (dropzone.length > 0) {
+        dropzone.on('dragover dragenter', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.css('border-color', '#3b82f6').css('background-color', '#eff6ff');
+        });
+        dropzone.on('dragleave dragend drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.type !== 'drop') {
+                dropzone.css('border-color', '#b3d6f0').css('background-color', 'var(--light)');
+            }
+        });
+        dropzone.on('drop', function(e) {
+            dropzone.css('border-color', '#22c55e').css('background-color', 'var(--light)');
+            const files = e.originalEvent.dataTransfer.files;
+            if (files.length > 0) {
+                $('#study_file')[0].files = files;
+                handleFileSelect($('#study_file')[0]);
+            }
+        });
+    }
 });
 
 // ══════════════════════════════════════════════════════════════
@@ -568,17 +593,23 @@ function submitNewStudy(e) {
     e.preventDefault();
     const form = $('#submit-study-form');
     const alertBox = $('#study-status-alert');
-    alertBox.addClass('d-none');
+    alertBox.addClass('d-none').removeClass('alert-success alert-danger');
+    
+    // Create FormData object to support file upload
+    const formData = new FormData(form[0]);
     
     $.ajax({
         url: 'api/submit_study.php',
         method: 'POST',
-        data: form.serialize(),
+        data: formData,
+        contentType: false, // Required for multipart/form-data
+        processData: false, // Required for multipart/form-data
         dataType: 'json',
         success: function(res) {
             if (res.success) {
                 alertBox.text(res.message).removeClass('d-none').addClass('alert-success');
                 form[0].reset();
+                removeSelectedFile(); // Clear file preview UI
                 setTimeout(() => {
                     navigateTo('etudes');
                 }, 1500);
@@ -587,9 +618,35 @@ function submitNewStudy(e) {
             }
         },
         error: function() {
-            alertBox.text("Erreur de connexion.").removeClass('d-none').addClass('alert-danger');
+            alertBox.text("Erreur réseau ou fichier trop volumineux lors de la soumission.").removeClass('d-none').addClass('alert-danger');
         }
     });
+}
+
+function handleFileSelect(input) {
+    const file = input.files[0];
+    if (file) {
+        let sizeStr = '';
+        if (file.size > 1024 * 1024) {
+            sizeStr = (file.size / (1024 * 1024)).toFixed(2) + ' Mo';
+        } else {
+            sizeStr = (file.size / 1024).toFixed(2) + ' Ko';
+        }
+        $('#file-name').text(file.name);
+        $('#file-size').text(sizeStr);
+        $('#file-info').removeClass('d-none');
+        $('#dropzone-text').text('Changer de fichier...');
+        $('#file-dropzone').css('border-color', '#22c55e');
+    }
+}
+
+function removeSelectedFile() {
+    $('#study_file').val('');
+    $('#file-info').addClass('d-none');
+    $('#file-name').text('');
+    $('#file-size').text('');
+    $('#dropzone-text').text('Glissez vos fichiers (shapefile, PDF, plans) ou cliquez pour charger');
+    $('#file-dropzone').css('border-color', '#b3d6f0');
 }
 
 // 6. Submit New Student Innovation
@@ -871,4 +928,43 @@ function proposeIncubation(id, title, status) {
     } else {
         alert(`Processus d'acquisition démarré pour "${title}". Une offre de contrat de transfert technologique va vous être envoyée.`);
     }
+}
+
+// ══════════════════════════════════════════════════════════════
+// EXPERT PROFILE EDITION
+// ══════════════════════════════════════════════════════════════
+function openExpertProfileModal() {
+    $('#profile-status-alert').addClass('d-none').removeClass('alert-success alert-danger');
+    $('#expert-profile-modal').removeClass('d-none');
+}
+
+function closeExpertProfileModal() {
+    $('#expert-profile-modal').addClass('d-none');
+}
+
+function submitExpertProfile(e) {
+    e.preventDefault();
+    const form = $('#expert-profile-form');
+    const alertBox = $('#profile-status-alert');
+    alertBox.addClass('d-none').removeClass('alert-success alert-danger');
+    
+    $.ajax({
+        url: 'api/update_expert_profile.php',
+        method: 'POST',
+        data: form.serialize(),
+        dataType: 'json',
+        success: function(res) {
+            if (res.success) {
+                alertBox.text(res.message).removeClass('d-none').addClass('alert-success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                alertBox.text(res.error).removeClass('d-none').addClass('alert-danger');
+            }
+        },
+        error: function() {
+            alertBox.text("Erreur lors de la mise à jour de votre profil expert.").removeClass('d-none').addClass('alert-danger');
+        }
+    });
 }
