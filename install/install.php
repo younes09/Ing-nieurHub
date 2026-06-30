@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config/config.php';
 
 echo "<h2>IngénieurHub Database Installer</h2>";
 echo "Attempting to connect to MySQL server at " . DB_HOST . "...<br>";
@@ -33,10 +33,10 @@ try {
     $pdo->exec($sql);
     
     echo "<br><span style='color: green; font-size: 18px; font-weight: bold;'>✔ Database 'ingenieur_hub' created and seeded successfully!</span><br><br>";
-    echo "<a href='index.php' style='padding: 10px 20px; background: #0a4f8a; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;'>Go to IngénieurHub Home</a>";
+    echo "<a href='../index.php' style='padding: 10px 20px; background: #0a4f8a; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;'>Go to IngénieurHub Home</a>";
     
 } catch (Exception $e) {
     echo "<br><span style='color: red; font-size: 16px; font-weight: bold;'>❌ Error: " . $e->getMessage() . "</span><br>";
-    echo "Please verify your credentials in <b>config.php</b> and ensure that your XAMPP MySQL service is active.";
+    echo "Please verify your credentials in <b>config/config.php</b> and ensure that your XAMPP MySQL service is active.";
 }
 ?>

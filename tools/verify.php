@@ -6,10 +6,10 @@ echo "       INGENIEURHUB INTEGRITY VERIFIER            \n";
 echo "==================================================\n\n";
 
 $required_files = [
-    'config.php',
-    'db.php',
-    'schema.sql',
-    'install.php',
+    'config/config.php',
+    'config/db.php',
+    'install/schema.sql',
+    'install/install.php',
     'index.php',
     'css/style.css',
     'js/app.js',
@@ -36,7 +36,7 @@ $required_files = [
 $errors = 0;
 echo "1. Checking file existence:\n";
 foreach ($required_files as $file) {
-    $path = __DIR__ . '/' . $file;
+    $path = __DIR__ . '/../' . $file;
     if (file_exists($path)) {
         echo "  [OK] $file exists.\n";
     } else {
@@ -51,12 +51,10 @@ $php_files = array_filter($required_files, function($f) {
 });
 
 foreach ($php_files as $file) {
-    // We can run lint via php -l command, or do a token parsing. Since we are in PHP, we can't compile here, but we can do a basic check.
-    // We will verify if files include correctly (except API files that exit)
-    if ($file === 'config.php' || $file === 'db.php') {
+    if ($file === 'config/config.php' || $file === 'config/db.php') {
         try {
             ob_start();
-            include_once __DIR__ . '/' . $file;
+            include_once __DIR__ . '/../' . $file;
             ob_end_clean();
             echo "  [OK] $file loaded successfully.\n";
         } catch (Throwable $e) {

@@ -1,7 +1,7 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../config/db.php';
 
 // Verify session authentication and role
 if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_type'], ['Expert', 'Bureau'])) {

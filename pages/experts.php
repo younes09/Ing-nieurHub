@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../config/db.php';
 $db = getDB();
 
 $stmt = $db->query("SELECT * FROM experts");

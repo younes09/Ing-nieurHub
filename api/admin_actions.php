@@ -1,7 +1,7 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../config/db.php';
 
 // Authentication and Authorization Check
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'Admin') {
