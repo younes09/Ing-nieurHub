@@ -29,6 +29,7 @@ export const Navbar: React.FC = () => {
     { id: 'formations', label: 'Formations', icon: '🎓' },
     { id: 'etudes', label: 'Études', icon: '📐' },
     { id: 'recrutement', label: 'Recrutement', icon: '📋' },
+    { id: 'calculateurs', label: 'Calculateurs', icon: '🧮' },
     { id: 'chatbot', label: 'HydroBot', icon: '🤖' },
   ];
 

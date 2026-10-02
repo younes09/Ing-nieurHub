@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Search, ArrowRight, Star, ShieldCheck, CheckCircle2,
-  Clock, MapPin, Sparkles, Building2, Bot
+  Clock, MapPin, Sparkles, Building2, Bot, Calculator, Waves, Droplets, Sprout
 } from 'lucide-react';
 
 export const Accueil: React.FC = () => {
@@ -357,6 +357,98 @@ export const Accueil: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CALCULATEURS HYDRAULIQUES PROMINENT PREVIEW SECTION */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-cyan-950/20 via-brand-900/10 to-indigo-950/20 dark:from-slate-900 dark:to-slate-850 border border-cyan-500/30 dark:border-cyan-800/40 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-bold text-cyan-800 dark:text-cyan-300 mb-2">
+                🧮 Outils & Formules Interactifs
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                Calculateurs Hydrauliques & VRD en Libre Accès
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                Prédimensionnez vos ouvrages et vérifiez les vitesses d'auto-curage et pertes de charge selon les normes algériennes.
+              </p>
+            </div>
+            <button
+              onClick={() => navigateTo('calculateurs')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-cyan-600 hover:from-brand-500 hover:to-cyan-500 text-white font-bold text-xs shadow-md transition-all self-start sm:self-auto"
+            >
+              <span>Accéder aux calculateurs</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Tile 1 */}
+            <div
+              onClick={() => navigateTo('calculateurs')}
+              className="cursor-pointer p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-cyan-500 hover:shadow-md transition-all space-y-2 group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-cyan-100 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 flex items-center justify-center">
+                <Waves className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 transition-colors">
+                Manning-Strickler
+              </h4>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Écoulements gravitaires, vitesse d'auto-curage (0.5 - 3.0 m/s) et débit des collecteurs.
+              </p>
+            </div>
+
+            {/* Tile 2 */}
+            <div
+              onClick={() => navigateTo('calculateurs')}
+              className="cursor-pointer p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-cyan-500 hover:shadow-md transition-all space-y-2 group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 flex items-center justify-center">
+                <Droplets className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 transition-colors">
+                Hazen-Williams AEP
+              </h4>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Pertes de charge linéaires (mCE/km), vitesses en conduites sous pression et puissance pompe.
+              </p>
+            </div>
+
+            {/* Tile 3 */}
+            <div
+              onClick={() => navigateTo('calculateurs')}
+              className="cursor-pointer p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-cyan-500 hover:shadow-md transition-all space-y-2 group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
+                <Sprout className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 transition-colors">
+                Besoins d'Irrigation (FAO 56)
+              </h4>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Calcul des volumes journaliers et débit de pompage selon les wilayas et coefficients Kc.
+              </p>
+            </div>
+
+            {/* Tile 4 */}
+            <div
+              onClick={() => navigateTo('calculateurs')}
+              className="cursor-pointer p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-cyan-500 hover:shadow-md transition-all space-y-2 group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 transition-colors">
+                Déversoirs de Crue
+              </h4>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Largeur déversante minimale Creager/Poleni et revanche de sécurité pour barrages collinaires.
+              </p>
             </div>
           </div>
         </div>

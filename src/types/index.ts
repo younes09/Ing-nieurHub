@@ -171,5 +171,7 @@ export type PageRoute =
   | 'etudes' 
   | 'recrutement' 
   | 'chatbot' 
+  | 'calculateurs'
   | 'connexion' 
   | 'dashboard';
+

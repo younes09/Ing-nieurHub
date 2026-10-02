@@ -16,6 +16,7 @@ import { Formations } from './pages/Formations';
 import { Etudes } from './pages/Etudes';
 import { Recrutement } from './pages/Recrutement';
 import { ChatbotPage } from './pages/ChatbotPage';
+import { Calculateurs } from './pages/Calculateurs';
 import { Connexion } from './pages/Connexion';
 import { Dashboard } from './pages/Dashboard';
 
@@ -42,6 +43,8 @@ export const AppContent: React.FC = () => {
         return <Recrutement />;
       case 'chatbot':
         return <ChatbotPage />;
+      case 'calculateurs':
+        return <Calculateurs />;
       case 'connexion':
         return <Connexion />;
       case 'dashboard':
